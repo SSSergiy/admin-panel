@@ -4,7 +4,6 @@ import FileUploader from '@/components/FileUploader';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
 
 export default function UploadPage() {
   const { user, isLoaded } = useUser();

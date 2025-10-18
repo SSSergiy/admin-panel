@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { getWorkflowStatus, triggerBuild } from '@/lib/github';
 import { auth } from '@clerk/nextjs/server';
-import { triggerBuild, getWorkflowStatus } from '@/lib/github';
+import { NextResponse } from 'next/server';
 
 // Карта для отслеживания последних билдов пользователей
 const lastBuildTime = new Map<string, number>();

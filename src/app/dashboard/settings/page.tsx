@@ -69,6 +69,7 @@ export default function SettingsPage() {
 
       // Получаем полный config.json чтобы не перезаписать pages
       const currentResponse = await fetch('/api/files/get?filename=config.json');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let currentData: any = {};
       
       if (currentResponse.ok) {
