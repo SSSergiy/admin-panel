@@ -6,7 +6,7 @@ import { triggerBuild, getWorkflowStatus } from '@/lib/github';
 const lastBuildTime = new Map<string, number>();
 const BUILD_COOLDOWN = 5 * 60 * 1000; // 5 минут
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const { userId } = await auth();
     

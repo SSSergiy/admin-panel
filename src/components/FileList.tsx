@@ -38,7 +38,7 @@ export default function FileList({ files, onDelete, onRefresh, loading = false }
 
   const getFileIcon = (key: string) => {
     if (key.includes('/images/')) {
-      return <Image className="h-5 w-5 text-blue-500" />;
+      return <Image className="h-5 w-5 text-blue-500" alt="" />;
     }
     return <FileText className="h-5 w-5 text-gray-500" />;
   };

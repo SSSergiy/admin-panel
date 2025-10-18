@@ -77,7 +77,8 @@ export default function SettingsPage() {
       }
 
       // Обновляем только site и theme
-      const updatedData = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const updatedData: any = {
         ...currentData,
         site: settings.site,
         theme: settings.theme
@@ -240,7 +241,7 @@ export default function SettingsPage() {
                   placeholder="logo.png"
                 />
                 <p className="mt-1 text-xs text-gray-500">
-                  Загрузите файл через "Загрузить файлы"
+                  Загрузите файл через &quot;Загрузить файлы&quot;
                 </p>
               </div>
 
@@ -349,9 +350,9 @@ export default function SettingsPage() {
         {/* Подсказка */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h3 className="text-sm font-medium text-blue-800 mb-2">💡 Подсказка</h3>
-          <p className="text-sm text-blue-700">
-            После изменения настроек нажмите "Сохранить", затем вернитесь на главную страницу 
-            и нажмите "Опубликовать сайт", чтобы изменения вступили в силу на публичном сайте.
+              <p className="text-sm text-blue-700">
+            После изменения настроек нажмите &quot;Сохранить&quot;, затем вернитесь на главную страницу 
+            и нажмите &quot;Опубликовать сайт&quot;, чтобы изменения вступили в силу на публичном сайте.
           </p>
         </div>
       </main>

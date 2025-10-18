@@ -6,6 +6,7 @@ import { Save, AlertCircle, CheckCircle } from 'lucide-react';
 
 interface JSONEditorProps {
   initialValue?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSave: (data: any) => Promise<void>;
   onError?: (error: string) => void;
   filename: string;

@@ -8,10 +8,7 @@ import { useState } from 'react';
 
 export default function UploadPage() {
   const { user, isLoaded } = useUser();
-  const [uploading, setUploading] = useState(false);
-
   const handleUpload = async (file: File) => {
-    setUploading(true);
     
     try {
       const formData = new FormData();
@@ -32,8 +29,6 @@ export default function UploadPage() {
     } catch (error) {
       console.error('Upload error:', error);
       throw error;
-    } finally {
-      setUploading(false);
     }
   };
 

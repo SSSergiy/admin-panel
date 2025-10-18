@@ -82,6 +82,7 @@ export async function getJsonFile(userId: string, filename: string) {
 }
 
 // Функция для сохранения JSON файла
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function saveJsonFile(userId: string, filename: string, data: any) {
   try {
     const command = new PutObjectCommand({

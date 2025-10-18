@@ -1,7 +1,7 @@
 'use client';
 
 import { UserButton, useUser } from '@clerk/nextjs';
-import { ArrowLeft, FileText } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import JSONEditor from '@/components/JSONEditor';
@@ -10,7 +10,7 @@ export default function EditPage() {
   const { user, isLoaded } = useUser();
   const [loading, setLoading] = useState(true);
   const [initialValue, setInitialValue] = useState('{}');
-  const [filename, setFilename] = useState('config.json');
+  const [filename] = useState('config.json');
 
   useEffect(() => {
     if (isLoaded && user) {
@@ -56,6 +56,7 @@ export default function EditPage() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSave = async (data: any) => {
     try {
       const response = await fetch('/api/files/save', {
