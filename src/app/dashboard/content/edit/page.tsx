@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { UserButton, useUser } from '@clerk/nextjs';
 import { ArrowLeft, CheckCircle, Save, XCircle } from 'lucide-react';
 import Link from 'next/link';
