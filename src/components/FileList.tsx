@@ -30,7 +30,7 @@ export default function FileList({ files, onDelete, onRefresh, loading = false }
       onRefresh();
     } catch (error) {
       console.error('Delete error:', error);
-      alert('Ошибка при удалении файла');
+      alert('Ошибка при удалении файла ');
     } finally {
       setDeleting(null);
     }
