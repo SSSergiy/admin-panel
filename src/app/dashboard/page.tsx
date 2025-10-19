@@ -189,7 +189,7 @@ export default function Dashboard() {
           </Link>
 
           <Link 
-            href={`http://localhost:8080/${user?.id}`}
+            href={`https://website-code-eg1.pages.dev/${user?.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow block"
