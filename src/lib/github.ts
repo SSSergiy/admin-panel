@@ -11,23 +11,29 @@ const REPO_NAME = process.env.GITHUB_REPO_NAME!;
 // Функция для запуска GitHub Actions workflow
 export async function triggerBuild(clientId?: string) {
   try {
-    const inputs: Record<string, string> = {};
-    
     // Если передан clientId - билдим только этого клиента
     if (clientId) {
-      inputs.clientId = clientId;
       console.log(`Triggering build for client: ${clientId}`);
     } else {
       console.log('Triggering build for all clients');
     }
     
-    const response = await octokit.rest.actions.createWorkflowDispatch({
+    // Формируем параметры запроса
+    const dispatchParams: any = {
       owner: REPO_OWNER,
       repo: REPO_NAME,
       workflow_id: 'build-and-deploy.yml',
       ref: 'dev', // Важно: билдим из dev ветки!
-      inputs,
-    });
+    };
+    
+    // Добавляем inputs только если есть clientId
+    if (clientId) {
+      dispatchParams.inputs = {
+        clientId: clientId
+      };
+    }
+    
+    const response = await octokit.rest.actions.createWorkflowDispatch(dispatchParams);
 
     return { success: true, response };
   } catch (error) {
