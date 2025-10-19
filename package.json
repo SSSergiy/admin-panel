@@ -9,30 +9,31 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@clerk/nextjs": "^6.0.0",
+    "@monaco-editor/react": "^4.6.0",
+    "@octokit/rest": "^21.0.0",
+    "@radix-ui/react-dialog": "^1.1.0",
+    "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-toast": "^1.2.0",
+    "jszip": "^3.10.0",
+    "lucide-react": "^0.460.0",
+    "next": "15.5.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.6",
-    "@clerk/nextjs": "^6.0.0",
-    "@aws-sdk/client-s3": "^3.0.0",
-    "@octokit/rest": "^21.0.0",
     "react-dropzone": "^14.0.0",
-    "@monaco-editor/react": "^4.6.0",
-    "lucide-react": "^0.460.0",
-    "zod": "^3.23.0",
-    "jszip": "^3.10.0",
-    "@radix-ui/react-dialog": "^1.1.0",
-    "@radix-ui/react-toast": "^1.2.0",
-    "@radix-ui/react-label": "^2.1.0"
+    "zod": "^3.23.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@cloudflare/next-on-pages": "^1.13.16",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.6",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
