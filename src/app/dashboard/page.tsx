@@ -6,6 +6,12 @@ import { CheckCircle, Eye, FileText, Rocket, Upload, XCircle } from 'lucide-reac
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+// Маппинг userId → Cloudflare Pages URL
+const CLIENT_SITES: Record<string, string> = {
+  'user_34EvUVHa2Fv9rbrXKRzHCbR7791': 'https://website-code-eg1.pages.dev/user_34EvUVHa2Fv9rbrXKRzHCbR7791',
+  'user_34HuRacqhtVx3xG1KmC8UyFT8OV': 'https://client-website-template.pages.dev',
+};
+
 interface FileItem {
   Key: string;
   LastModified: string;
@@ -189,7 +195,7 @@ export default function Dashboard() {
           </Link>
 
           <Link 
-            href={`https://website-code-eg1.pages.dev/${user?.id}`}
+            href={CLIENT_SITES[user?.id || ''] || '#'}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow block"
