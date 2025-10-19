@@ -13,13 +13,26 @@ export async function triggerBuild(clientId?: string) {
   try {
     console.log(`Triggering build${clientId ? ` for client: ${clientId}` : ' for all clients'}`);
     
-    const response = await octokit.rest.actions.createWorkflowDispatch({
+    // Базовые параметры для workflow dispatch
+    const dispatchParams: {
+      owner: string;
+      repo: string;
+      workflow_id: string;
+      ref: string;
+      inputs?: { clientId: string };
+    } = {
       owner: REPO_OWNER,
       repo: REPO_NAME,
       workflow_id: 'build-and-deploy.yml',
       ref: 'dev',
-      inputs: clientId ? { clientId } : {}
-    });
+    };
+
+    // Добавляем inputs только если есть clientId
+    if (clientId) {
+      dispatchParams.inputs = { clientId };
+    }
+    
+    const response = await octokit.rest.actions.createWorkflowDispatch(dispatchParams);
 
     return { success: true, response };
   } catch (error) {
