@@ -189,14 +189,14 @@ export default function Dashboard() {
           </Link>
 
           <Link 
-            href={`https://website-code-eg1.pages.dev/${user?.id}`}
+            href={`https://website-code-eg1.pages.dev/preview/${user?.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow block"
           >
             <Eye className="h-8 w-8 text-orange-600 mb-2" />
-            <h3 className="font-semibold text-gray-900">Предпросмотр</h3>
-            <p className="text-sm text-gray-600">Посмотреть сайт</p>
+            <h3 className="font-semibold text-gray-900">Предпросмотр LIVE</h3>
+            <p className="text-sm text-gray-600">Мгновенный preview</p>
           </Link>
         </div>
 
