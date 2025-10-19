@@ -11,7 +11,7 @@ const REPO_OWNER = process.env.GITHUB_REPO_OWNER!; // SSSergiy
 // Добавляй сюда каждого нового клиента вручную
 const CLIENT_REPOS: Record<string, string> = {
   'user_34EvUVHa2Fv9rbrXKRzHCbR7791': 'website-code', // Первый клиент
-  // 'user_NEW123': 'client-cafe-leto',  // Второй клиент (добавишь когда создашь)
+  'user_34HuRacqhtVx3xG1KmC8UyFT8OV': 'client-website-template', // Второй клиент (client-001)
   // 'user_XYZ789': 'client-photo-studio', // Третий клиент
 };
 
