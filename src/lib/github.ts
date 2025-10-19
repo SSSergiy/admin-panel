@@ -5,34 +5,35 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
-const REPO_OWNER = process.env.GITHUB_REPO_OWNER!;
-const REPO_NAME = process.env.GITHUB_REPO_NAME!;
+const REPO_OWNER = process.env.GITHUB_REPO_OWNER!; // SSSergiy
+
+// Маппинг userId → repoName
+// Добавляй сюда каждого нового клиента вручную
+const CLIENT_REPOS: Record<string, string> = {
+  'user_34EvUVHa2Fv9rbrXKRzHCbR7791': 'website-code', // Первый клиент
+  // 'user_NEW123': 'client-cafe-leto',  // Второй клиент (добавишь когда создашь)
+  // 'user_XYZ789': 'client-photo-studio', // Третий клиент
+};
 
 // Функция для запуска GitHub Actions workflow
-export async function triggerBuild(clientId?: string) {
+export async function triggerBuild(userId: string) {
   try {
-    console.log(`Triggering build${clientId ? ` for client: ${clientId}` : ' for all clients'}`);
+    // Получаем название репо для клиента
+    const repoName = CLIENT_REPOS[userId];
     
-    // Базовые параметры для workflow dispatch
-    const dispatchParams: {
-      owner: string;
-      repo: string;
-      workflow_id: string;
-      ref: string;
-      inputs?: { clientId: string };
-    } = {
+    if (!repoName) {
+      console.error(`No repository configured for userId: ${userId}`);
+      throw new Error('Client repository not configured. Contact support.');
+    }
+
+    console.log(`Triggering build for client: ${userId} → repo: ${repoName}`);
+    
+    const response = await octokit.rest.actions.createWorkflowDispatch({
       owner: REPO_OWNER,
-      repo: REPO_NAME,
+      repo: repoName,
       workflow_id: 'build-and-deploy.yml',
       ref: 'dev',
-    };
-
-    // Добавляем inputs только если есть clientId
-    if (clientId) {
-      dispatchParams.inputs = { clientId };
-    }
-    
-    const response = await octokit.rest.actions.createWorkflowDispatch(dispatchParams);
+    });
 
     return { success: true, response };
   } catch (error) {
@@ -42,11 +43,17 @@ export async function triggerBuild(clientId?: string) {
 }
 
 // Функция для получения статуса последнего workflow
-export async function getWorkflowStatus() {
+export async function getWorkflowStatus(userId: string) {
   try {
+    const repoName = CLIENT_REPOS[userId];
+    
+    if (!repoName) {
+      throw new Error('Client repository not configured');
+    }
+
     const response = await octokit.rest.actions.listWorkflowRuns({
       owner: REPO_OWNER,
-      repo: REPO_NAME,
+      repo: repoName,
       workflow_id: 'build-and-deploy.yml',
       per_page: 1,
     });

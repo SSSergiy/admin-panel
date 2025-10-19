@@ -29,8 +29,8 @@ export async function POST() {
       );
     }
 
-    // Запуск GitHub Actions workflow с передачей userId
-    // Это позволит билдить только этого клиента (быстрее)
+    // Запуск GitHub Actions workflow для репо клиента
+    // userId → repoName (маппинг в lib/github.ts)
     await triggerBuild(userId);
     
     // Обновляем время последнего билда
@@ -58,7 +58,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const status = await getWorkflowStatus();
+    const status = await getWorkflowStatus(userId);
     
     return NextResponse.json(status);
   } catch (error) {
