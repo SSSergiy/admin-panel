@@ -29,15 +29,16 @@ export async function POST() {
       );
     }
 
-    // Запуск GitHub Actions workflow
-    await triggerBuild();
+    // Запуск GitHub Actions workflow с передачей userId
+    // Это позволит билдить только этого клиента (быстрее)
+    await triggerBuild(userId);
     
     // Обновляем время последнего билда
     lastBuildTime.set(userId, now);
 
     return NextResponse.json({ 
       success: true,
-      message: 'Билд успешно запущен. Сайт будет обновлен через 2-5 минут.'
+      message: 'Билд успешно запущен. Ваш сайт будет обновлен через 30-60 секунд.'
     });
   } catch (error) {
     console.error('Error triggering build:', error);
