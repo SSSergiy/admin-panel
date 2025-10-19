@@ -16,7 +16,7 @@ export default async function Home() {
             Multi-Tenant CMS
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Создавайте и управляйте сайтами для ваших клиентов с помощью современной админ-панели
+            Создавайте и управляйте сайтами для ваших клиентов с помощью современной админ-панелии
           </p>
 
           <SignedOut>
