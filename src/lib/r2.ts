@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 // Конфигурация R2 клиента
 const r2Client = new S3Client({
@@ -97,5 +97,28 @@ export async function saveJsonFile(userId: string, filename: string, data: any) 
   } catch (error) {
     console.error('Error saving JSON file:', error);
     throw new Error('Failed to save JSON file');
+  }
+}
+
+// Функция для автоматического создания стандартных папок
+export async function ensureDefaultFolders(userId: string) {
+  const DEFAULT_FOLDERS = ['logos', 'hero', 'about', 'services', 'gallery', 'general'];
+  
+  for (const folder of DEFAULT_FOLDERS) {
+    try {
+      const folderKey = `clients/${userId}/images/${folder}/`;
+      
+      const command = new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: folderKey,
+        Body: '',
+        ContentType: 'application/x-directory',
+      });
+
+      await r2Client.send(command);
+    } catch (error) {
+      // Папка уже существует, это нормально
+      console.log(`Folder ${folder} already exists or error creating it`);
+    }
   }
 }

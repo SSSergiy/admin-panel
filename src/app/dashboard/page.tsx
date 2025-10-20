@@ -1,14 +1,15 @@
 'use client';
 
 import FileList from '@/components/FileList';
+import Sidebar from '@/components/Sidebar';
 import { UserButton, useUser } from '@clerk/nextjs';
-import { CheckCircle, Eye, FileText, Rocket, Upload, XCircle } from 'lucide-react';
+import { BarChart3, CheckCircle, Eye, FileText, Rocket, Settings, Upload, XCircle, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 // Маппинг userId → Cloudflare Pages URL
 const CLIENT_SITES: Record<string, string> = {
-  'user_34EvUVHa2Fv9rbrXKRzHCbR7791': 'https://website-code-eg1.pages.dev/user_34EvUVHa2Fv9rbrXKRzHCbR7791',
+  'user_34EvUVHa2Fv9rbrXKRzHCbR7791': 'https://website-code-eg1.pages.dev',
   'user_34HuRacqhtVx3xG1KmC8UyFT8OV': 'https://client-website-template.pages.dev',
 };
 
@@ -114,121 +115,190 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900">
-                Multi-Tenant CMS
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                Привет, {user.firstName || user.emailAddresses[0].emailAddress}!
-              </span>
-              <UserButton afterSignOutUrl="/" />
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-gray-900">
+      <Sidebar userSiteUrl={CLIENT_SITES[user?.id || '']} />
+      
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Панель управления</h2>
-            <p className="text-gray-600">
-              Управляйте файлами и настройками вашего сайта
-            </p>
-          </div>
-          <button
-            onClick={handlePublish}
-            disabled={publishing}
-            className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:cursor-not-allowed"
-          >
-            <Rocket className="h-5 w-5" />
-            <span>{publishing ? 'Публикация...' : 'Опубликовать сайт'}</span>
-          </button>
-        </div>
-
-        {/* Уведомления */}
-        {publishMessage && (
-          <div className={`mb-6 p-4 rounded-lg border ${
-            publishMessage.type === 'success' 
-              ? 'bg-green-50 border-green-200' 
-              : 'bg-red-50 border-red-200'
-          }`}>
-            <div className="flex items-start space-x-3">
-              {publishMessage.type === 'success' ? (
-                <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-              ) : (
-                <XCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-              )}
-              <div className={publishMessage.type === 'success' ? 'text-green-800' : 'text-red-800'}>
-                <p className="font-medium">{publishMessage.type === 'success' ? 'Успех!' : 'Ошибка'}</p>
-                <p className="text-sm mt-1">{publishMessage.text}</p>
+      <div className="lg:pl-64">
+        {/* Header */}
+        <header className="bg-gray-900/50 backdrop-blur-xl border-b border-gray-800 sticky top-0 z-30">
+          <div className="px-6 py-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl font-bold text-white">
+                  Добро пожаловать, {user.firstName || user.emailAddresses[0].emailAddress}!
+                </h1>
+                <p className="text-gray-400 mt-1">Управляйте своим сайтом с легкостью</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <UserButton 
+                  afterSignOutUrl="/"
+                  appearance={{
+                    elements: {
+                      avatarBox: "w-10 h-10",
+                      userButtonPopoverCard: "bg-gray-800 border-gray-700",
+                      userButtonPopoverActionButton: "text-gray-300 hover:bg-gray-700",
+                    }
+                  }}
+                />
               </div>
             </div>
           </div>
-        )}
+        </header>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Link href="/dashboard/settings" className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow block">
-            <FileText className="h-8 w-8 text-blue-600 mb-2" />
-            <h3 className="font-semibold text-gray-900">Настройки сайта</h3>
-            <p className="text-sm text-gray-600">Название, цвета, шрифты</p>
-          </Link>
+        {/* Main Content */}
+        <main className="p-6">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="glass rounded-2xl p-6 animate-fade-in">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm font-medium">Всего файлов</p>
+                  <p className="text-2xl font-bold text-white mt-1">{files.length}</p>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                  <FileText className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </div>
 
-          <Link href="/dashboard/content" className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow block">
-            <FileText className="h-8 w-8 text-green-600 mb-2" />
-            <h3 className="font-semibold text-gray-900">Контент</h3>
-            <p className="text-sm text-gray-600">Страницы сайта</p>
-          </Link>
+            <div className="glass rounded-2xl p-6 animate-fade-in">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm font-medium">Изображения</p>
+                  <p className="text-2xl font-bold text-white mt-1">
+                    {files.filter(f => f.Key.includes('images/')).length}
+                  </p>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center">
+                  <Upload className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </div>
 
-          <Link href="/dashboard/images" className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow block">
-            <Upload className="h-8 w-8 text-purple-600 mb-2" />
-            <h3 className="font-semibold text-gray-900">Изображения</h3>
-            <p className="text-sm text-gray-600">Галерея файлов</p>
-          </Link>
-
-          <Link 
-            href={CLIENT_SITES[user?.id || ''] || '#'}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow block"
-          >
-            <Eye className="h-8 w-8 text-orange-600 mb-2" />
-            <h3 className="font-semibold text-gray-900">Посмотреть сайт</h3>
-            <p className="text-sm text-gray-600">Открыть публичный сайт</p>
-          </Link>
-        </div>
-
-        {/* Files List */}
-        <div className="bg-white rounded-lg shadow-sm border">
-          <div className="px-6 py-4 border-b">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Файлы</h3>
-              <button
-                onClick={fetchFiles}
-                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-              >
-                Обновить
-              </button>
+            <div className="glass rounded-2xl p-6 animate-fade-in">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm font-medium">Статус сайта</p>
+                  <p className="text-lg font-bold text-green-400 mt-1">Активен</p>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                  <Zap className="h-6 w-6 text-white" />
+                </div>
+              </div>
             </div>
           </div>
-          <div className="p-6">
-            <FileList
-              files={files}
-              onDelete={handleDeleteFile}
-              onRefresh={fetchFiles}
-              loading={loading}
-            />
+
+          {/* Publish Button */}
+          <div className="flex justify-end mb-8">
+            <button
+              onClick={handlePublish}
+              disabled={publishing}
+              className="gradient-button flex items-center space-x-3 text-white font-semibold py-4 px-8 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              <Rocket className="h-5 w-5" />
+              <span>{publishing ? 'Публикация...' : 'Опубликовать сайт'}</span>
+            </button>
           </div>
-        </div>
-      </main>
+
+          {/* Уведомления */}
+          {publishMessage && (
+            <div className={`mb-6 p-6 rounded-2xl border animate-slide-up ${
+              publishMessage.type === 'success' 
+                ? 'bg-green-500/10 border-green-500/20' 
+                : 'bg-red-500/10 border-red-500/20'
+            }`}>
+              <div className="flex items-start space-x-4">
+                {publishMessage.type === 'success' ? (
+                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
+                ) : (
+                  <XCircle className="h-6 w-6 text-red-400 flex-shrink-0 mt-0.5" />
+                )}
+                <div className={publishMessage.type === 'success' ? 'text-green-300' : 'text-red-300'}>
+                  <p className="font-semibold text-lg">{publishMessage.type === 'success' ? 'Успех!' : 'Ошибка'}</p>
+                  <p className="text-sm mt-1">{publishMessage.text}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <Link 
+              href="/dashboard/settings" 
+              className="glass p-6 rounded-2xl hover:bg-gray-800/50 transition-all duration-300 group animate-fade-in"
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Settings className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-white text-lg mb-2">Настройки сайта</h3>
+              <p className="text-gray-400 text-sm">Название, цвета, шрифты</p>
+            </Link>
+
+            <Link 
+              href="/dashboard/content" 
+              className="glass p-6 rounded-2xl hover:bg-gray-800/50 transition-all duration-300 group animate-fade-in"
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <FileText className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-white text-lg mb-2">Контент</h3>
+              <p className="text-gray-400 text-sm">Страницы сайта</p>
+            </Link>
+
+            <Link 
+              href="/dashboard/images" 
+              className="glass p-6 rounded-2xl hover:bg-gray-800/50 transition-all duration-300 group animate-fade-in"
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Upload className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-white text-lg mb-2">Изображения</h3>
+              <p className="text-gray-400 text-sm">Галерея файлов</p>
+            </Link>
+
+            <Link 
+              href={CLIENT_SITES[user?.id || ''] || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass p-6 rounded-2xl hover:bg-gray-800/50 transition-all duration-300 group animate-fade-in"
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Eye className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-white text-lg mb-2">Посмотреть сайт</h3>
+              <p className="text-gray-400 text-sm">Открыть публичный сайт</p>
+            </Link>
+          </div>
+
+          {/* Files List */}
+          <div className="glass rounded-2xl overflow-hidden">
+            <div className="px-6 py-6 border-b border-gray-800">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-white">Файлы</h3>
+                  <p className="text-gray-400 text-sm mt-1">Управляйте файлами вашего сайта</p>
+                </div>
+                <button
+                  onClick={fetchFiles}
+                  className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white transition-colors"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  <span className="text-sm font-medium">Обновить</span>
+                </button>
+              </div>
+            </div>
+            <div className="p-6">
+              <FileList
+                files={files}
+                onDelete={handleDeleteFile}
+                onRefresh={fetchFiles}
+                loading={loading}
+              />
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

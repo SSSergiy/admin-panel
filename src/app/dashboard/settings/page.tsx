@@ -1,9 +1,10 @@
 'use client';
 
+import Sidebar from '@/components/Sidebar';
 import { UserButton, useUser } from '@clerk/nextjs';
-import { ArrowLeft, Save, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Globe, Palette, Save, Type, XCircle } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface SiteSettings {
   site: {
@@ -40,27 +41,36 @@ export default function SettingsPage() {
   });
 
   useEffect(() => {
-    if (isLoaded && user) {
-      loadSettings();
-    }
-  }, [isLoaded, user]);
-
-  const loadSettings = async () => {
-    try {
-      const response = await fetch('/api/files/get?filename=config.json');
-      if (response.ok) {
-        const { data } = await response.json();
-        setSettings({
-          site: data.site || settings.site,
-          theme: data.theme || settings.theme
-        });
+    const loadSettings = async () => {
+      if (!isLoaded || !user) return;
+      
+      try {
+        const response = await fetch('/api/files/get?filename=config.json');
+        if (response.ok) {
+          const { data } = await response.json();
+          setSettings({
+            site: data.site || {
+              title: '',
+              description: '',
+              logo: '',
+              favicon: ''
+            },
+            theme: data.theme || {
+              primaryColor: '#3B82F6',
+              secondaryColor: '#1E40AF',
+              fontFamily: 'Inter'
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error loading settings:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    loadSettings();
+  }, [isLoaded, user]);
 
   const handleSave = async () => {
     try {
@@ -136,227 +146,270 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Link 
-                href="/dashboard"
-                className="text-gray-600 hover:text-gray-900"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-gray-900">
-                Настройки сайта
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-              >
-                <Save className="h-4 w-4" />
-                <span>{saving ? 'Сохранение...' : 'Сохранить'}</span>
-              </button>
-              <UserButton afterSignOutUrl="/" />
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-gray-900">
+      <Sidebar />
+      
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Уведомления */}
-        {message && (
-          <div className={`mb-6 p-4 rounded-lg border ${
-            message.type === 'success' 
-              ? 'bg-green-50 border-green-200' 
-              : 'bg-red-50 border-red-200'
-          }`}>
-            <div className="flex items-start space-x-3">
-              {message.type === 'success' ? (
-                <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-              ) : (
-                <XCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-              )}
-              <p className={message.type === 'success' ? 'text-green-800' : 'text-red-800'}>
-                {message.text}
-              </p>
+      <div className="lg:pl-64">
+        {/* Header */}
+        <header className="bg-gray-900/50 backdrop-blur-xl border-b border-gray-800 sticky top-0 z-30">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Link 
+                  href="/dashboard"
+                  className="p-2 rounded-xl bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white transition-colors"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Link>
+                <div>
+                  <h1 className="text-2xl font-bold text-white">
+                    Настройки сайта
+                  </h1>
+                  <p className="text-gray-400 text-sm mt-1">Настройте внешний вид и контент вашего сайта</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="gradient-button flex items-center space-x-3 text-white font-semibold py-3 px-6 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                >
+                  <Save className="h-5 w-5" />
+                  <span>{saving ? 'Сохранение...' : 'Сохранить'}</span>
+                </button>
+                <UserButton 
+                  afterSignOutUrl="/"
+                  appearance={{
+                    elements: {
+                      avatarBox: "w-10 h-10",
+                      userButtonPopoverCard: "bg-gray-800 border-gray-700",
+                      userButtonPopoverActionButton: "text-gray-300 hover:bg-gray-700",
+                    }
+                  }}
+                />
+              </div>
             </div>
           </div>
-        )}
+        </header>
 
-        {/* Основная информация */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Основная информация</h2>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Название сайта
-              </label>
-              <input
-                type="text"
-                value={settings.site.title}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  site: { ...settings.site, title: e.target.value }
-                })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Мой сайт"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Описание
-              </label>
-              <textarea
-                value={settings.site.description}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  site: { ...settings.site, description: e.target.value }
-                })}
-                rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Краткое описание вашего сайта"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Логотип (имя файла)
-                </label>
-                <input
-                  type="text"
-                  value={settings.site.logo}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    site: { ...settings.site, logo: e.target.value }
-                  })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="logo.png"
-                />
-                <p className="mt-1 text-xs text-gray-500">
-                  Загрузите файл через &quot;Загрузить файлы&quot;
+        {/* Main Content */}
+        <main className="p-6 max-w-4xl">
+          {/* Уведомления */}
+          {message && (
+            <div className={`mb-6 p-6 rounded-2xl border animate-slide-up ${
+              message.type === 'success' 
+                ? 'bg-green-500/10 border-green-500/20' 
+                : 'bg-red-500/10 border-red-500/20'
+            }`}>
+              <div className="flex items-start space-x-4">
+                {message.type === 'success' ? (
+                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
+                ) : (
+                  <XCircle className="h-6 w-6 text-red-400 flex-shrink-0 mt-0.5" />
+                )}
+                <p className={message.type === 'success' ? 'text-green-300' : 'text-red-300'}>
+                  {message.text}
                 </p>
               </div>
+            </div>
+          )}
 
+          {/* Основная информация */}
+          <div className="glass rounded-2xl p-8 mb-8 animate-fade-in">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                <Globe className="h-6 w-6 text-white" />
+              </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Favicon (имя файла)
+                <h2 className="text-xl font-bold text-white">Основная информация</h2>
+                <p className="text-gray-400 text-sm">Название, описание и логотип сайта</p>
+              </div>
+            </div>
+          
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-white mb-3">
+                  Название сайта
                 </label>
                 <input
                   type="text"
-                  value={settings.site.favicon}
+                  value={settings.site.title}
                   onChange={(e) => setSettings({
                     ...settings,
-                    site: { ...settings.site, favicon: e.target.value }
+                    site: { ...settings.site, title: e.target.value }
                   })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="favicon.ico"
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Мой сайт"
                 />
               </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Тема оформления */}
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Тема оформления</h2>
-          
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Основной цвет
+                <label className="block text-sm font-semibold text-white mb-3">
+                  Описание
                 </label>
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="color"
-                    value={settings.theme.primaryColor}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      theme: { ...settings.theme, primaryColor: e.target.value }
-                    })}
-                    className="h-10 w-20 rounded border border-gray-300 cursor-pointer"
-                  />
-                  <input
-                    type="text"
-                    value={settings.theme.primaryColor}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      theme: { ...settings.theme, primaryColor: e.target.value }
-                    })}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="#3B82F6"
-                  />
-                </div>
+                <textarea
+                  value={settings.site.description}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    site: { ...settings.site, description: e.target.value }
+                  })}
+                  rows={3}
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                  placeholder="Краткое описание вашего сайта"
+                />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Вторичный цвет
-                </label>
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="color"
-                    value={settings.theme.secondaryColor}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      theme: { ...settings.theme, secondaryColor: e.target.value }
-                    })}
-                    className="h-10 w-20 rounded border border-gray-300 cursor-pointer"
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-semibold text-white mb-3">
+                    Логотип (имя файла)
+                  </label>
                   <input
                     type="text"
-                    value={settings.theme.secondaryColor}
+                    value={settings.site.logo}
                     onChange={(e) => setSettings({
                       ...settings,
-                      theme: { ...settings.theme, secondaryColor: e.target.value }
+                      site: { ...settings.site, logo: e.target.value }
                     })}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="#1E40AF"
+                    className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="logo.png"
+                  />
+                  <p className="mt-2 text-xs text-gray-400">
+                    Загрузите файл через раздел &quot;Изображения&quot;
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-white mb-3">
+                    Favicon (имя файла)
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.site.favicon}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      site: { ...settings.site, favicon: e.target.value }
+                    })}
+                    className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="favicon.ico"
                   />
                 </div>
               </div>
             </div>
+        </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Шрифт
-              </label>
-              <select
-                value={settings.theme.fontFamily}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  theme: { ...settings.theme, fontFamily: e.target.value }
-                })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="Inter">Inter</option>
-                <option value="Roboto">Roboto</option>
-                <option value="Open Sans">Open Sans</option>
-                <option value="Montserrat">Montserrat</option>
-                <option value="Lato">Lato</option>
-              </select>
+          {/* Тема оформления */}
+          <div className="glass rounded-2xl p-8 mb-8 animate-fade-in">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <Palette className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">Тема оформления</h2>
+                <p className="text-gray-400 text-sm">Цвета и шрифты для вашего сайта</p>
+              </div>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-semibold text-white mb-3">
+                    Основной цвет
+                  </label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="color"
+                      value={settings.theme.primaryColor}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, primaryColor: e.target.value }
+                      })}
+                      className="h-12 w-16 rounded-xl border-2 border-gray-700 cursor-pointer bg-transparent"
+                    />
+                    <input
+                      type="text"
+                      value={settings.theme.primaryColor}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, primaryColor: e.target.value }
+                      })}
+                      className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      placeholder="#3B82F6"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-white mb-3">
+                    Вторичный цвет
+                  </label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="color"
+                      value={settings.theme.secondaryColor}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, secondaryColor: e.target.value }
+                      })}
+                      className="h-12 w-16 rounded-xl border-2 border-gray-700 cursor-pointer bg-transparent"
+                    />
+                    <input
+                      type="text"
+                      value={settings.theme.secondaryColor}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, secondaryColor: e.target.value }
+                      })}
+                      className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      placeholder="#1E40AF"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-white mb-3">
+                  Шрифт
+                </label>
+                <div className="flex items-center space-x-3">
+                  <Type className="h-5 w-5 text-gray-400" />
+                  <select
+                    value={settings.theme.fontFamily}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      theme: { ...settings.theme, fontFamily: e.target.value }
+                    })}
+                    className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  >
+                    <option value="Inter">Inter</option>
+                    <option value="Roboto">Roboto</option>
+                    <option value="Open Sans">Open Sans</option>
+                    <option value="Montserrat">Montserrat</option>
+                    <option value="Lato">Lato</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Подсказка */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">💡 Подсказка</h3>
-              <p className="text-sm text-blue-700">
-            После изменения настроек нажмите &quot;Сохранить&quot;, затем вернитесь на главную страницу 
-            и нажмите &quot;Опубликовать сайт&quot;, чтобы изменения вступили в силу на публичном сайте.
-          </p>
-        </div>
-      </main>
+          {/* Подсказка */}
+          <div className="glass rounded-2xl p-6">
+            <div className="flex items-start space-x-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-lg">💡</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-2">Подсказка</h3>
+                <p className="text-sm text-gray-400">
+                  После изменения настроек нажмите &quot;Сохранить&quot;, затем вернитесь на главную страницу 
+                  и нажмите &quot;Опубликовать сайт&quot;, чтобы изменения вступили в силу на публичном сайте.
+                </p>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

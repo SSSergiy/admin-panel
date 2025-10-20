@@ -2,8 +2,9 @@
 
 export const dynamic = 'force-dynamic';
 
+import Sidebar from '@/components/Sidebar';
 import { UserButton, useUser } from '@clerk/nextjs';
-import { ArrowLeft, CheckCircle, Save, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, FileText, Globe, Save, Type, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -175,139 +176,179 @@ export default function EditPageContent() {
 	}
 
 	return (
-		<div className="min-h-screen bg-gray-50">
-			{/* Header */}
-			<header className="bg-white shadow-sm border-b">
-				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="flex justify-between items-center h-16">
-						<div className="flex items-center space-x-4">
-							<Link
-								href="/dashboard/content"
-								className="text-gray-600 hover:text-gray-900"
-							>
-								<ArrowLeft className="h-5 w-5" />
-							</Link>
-							<h1 className="text-xl font-semibold text-gray-900">
-								{isNew ? 'Новая страница' : 'Редактирование страницы'}
-							</h1>
-						</div>
-						<div className="flex items-center space-x-4">
-							<button
-								onClick={handleSave}
-								disabled={saving}
-								className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-							>
-								<Save className="h-4 w-4" />
-								<span>{saving ? 'Сохранение...' : 'Сохранить'}</span>
-							</button>
-							<UserButton afterSignOutUrl="/" />
-						</div>
-					</div>
-				</div>
-			</header>
-
+		<div className="min-h-screen bg-gray-900">
+			<Sidebar />
+			
 			{/* Main Content */}
-			<main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-				{/* Уведомления */}
-				{message && (
-					<div className={`mb-6 p-4 rounded-lg border ${message.type === 'success'
-							? 'bg-green-50 border-green-200'
-							: 'bg-red-50 border-red-200'
-						}`}>
-						<div className="flex items-start space-x-3">
-							{message.type === 'success' ? (
-								<CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-							) : (
-								<XCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-							)}
-							<p className={message.type === 'success' ? 'text-green-800' : 'text-red-800'}>
-								{message.text}
-							</p>
+			<div className="lg:pl-64">
+				{/* Header */}
+				<header className="bg-gray-900/50 backdrop-blur-xl border-b border-gray-800 sticky top-0 z-30">
+					<div className="px-6 py-4">
+						<div className="flex items-center justify-between">
+							<div className="flex items-center space-x-4">
+								<Link
+									href="/dashboard/content"
+									className="p-2 rounded-xl bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white transition-colors"
+								>
+									<ArrowLeft className="h-5 w-5" />
+								</Link>
+								<div>
+									<h1 className="text-2xl font-bold text-white">
+										{isNew ? 'Новая страница' : 'Редактирование страницы'}
+									</h1>
+									<p className="text-gray-400 text-sm mt-1">Создайте или отредактируйте страницу сайта</p>
+								</div>
+							</div>
+							<div className="flex items-center space-x-4">
+								<button
+									onClick={handleSave}
+									disabled={saving}
+									className="gradient-button flex items-center space-x-3 text-white font-semibold py-3 px-6 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+								>
+									<Save className="h-5 w-5" />
+									<span>{saving ? 'Сохранение...' : 'Сохранить'}</span>
+								</button>
+								<UserButton 
+									afterSignOutUrl="/"
+									appearance={{
+										elements: {
+											avatarBox: "w-10 h-10",
+											userButtonPopoverCard: "bg-gray-800 border-gray-700",
+											userButtonPopoverActionButton: "text-gray-300 hover:bg-gray-700",
+										}
+									}}
+								/>
+							</div>
 						</div>
 					</div>
-				)}
+				</header>
 
-				{/* Форма */}
-				<div className="bg-white rounded-lg shadow-sm border p-6 space-y-6">
-					{/* Название */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">
-							Название страницы <span className="text-red-500">*</span>
-						</label>
-						<input
-							type="text"
-							value={page.title}
-							onChange={(e) => setPage({ ...page, title: e.target.value })}
-							onBlur={() => !page.slug && generateSlug(page.title)}
-							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-							placeholder="Главная страница"
-						/>
-						<p className="mt-1 text-xs text-gray-500">
-							Введите название - slug сгенерируется автоматически
-						</p>
-					</div>
+				{/* Main Content */}
+				<main className="p-6 max-w-4xl">
+					{/* Уведомления */}
+					{message && (
+						<div className={`mb-6 p-6 rounded-2xl border animate-slide-up ${
+							message.type === 'success' 
+								? 'bg-green-500/10 border-green-500/20' 
+								: 'bg-red-500/10 border-red-500/20'
+						}`}>
+							<div className="flex items-start space-x-4">
+								{message.type === 'success' ? (
+									<CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
+								) : (
+									<XCircle className="h-6 w-6 text-red-400 flex-shrink-0 mt-0.5" />
+								)}
+								<p className={message.type === 'success' ? 'text-green-300' : 'text-red-300'}>
+									{message.text}
+								</p>
+							</div>
+						</div>
+					)}
 
-					{/* Slug */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">
-							URL (slug) <span className="text-red-500">*</span>
-						</label>
-						<input
-							type="text"
-							value={page.slug}
-							onChange={(e) => setPage({ ...page, slug: e.target.value })}
-							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-							placeholder="/about"
-						/>
-						<p className="mt-1 text-xs text-gray-500">
-							Например: /, /about, /services
-						</p>
-					</div>
+					{/* Форма */}
+					<div className="glass rounded-2xl p-8 space-y-8 animate-fade-in">
+						{/* Название */}
+						<div>
+							<div className="flex items-center space-x-3 mb-4">
+								<div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+									<FileText className="h-5 w-5 text-white" />
+								</div>
+								<div>
+									<label className="block text-sm font-semibold text-white">
+										Название страницы <span className="text-red-400">*</span>
+									</label>
+									<p className="text-gray-400 text-xs">Введите название - slug сгенерируется автоматически</p>
+								</div>
+							</div>
+							<input
+								type="text"
+								value={page.title}
+								onChange={(e) => setPage({ ...page, title: e.target.value })}
+								onBlur={() => !page.slug && generateSlug(page.title)}
+								className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+								placeholder="Главная страница"
+							/>
+						</div>
 
-					{/* Контент */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">
-							Контент
-						</label>
-						<textarea
-							value={page.content}
-							onChange={(e) => setPage({ ...page, content: e.target.value })}
-							rows={12}
-							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
-							placeholder="Напишите текст страницы..."
-						/>
-						<p className="mt-1 text-xs text-gray-500">
-							Можно использовать HTML теги для форматирования
-						</p>
-					</div>
+						{/* Slug */}
+						<div>
+							<div className="flex items-center space-x-3 mb-4">
+								<div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+									<Globe className="h-5 w-5 text-white" />
+								</div>
+								<div>
+									<label className="block text-sm font-semibold text-white">
+										URL (slug) <span className="text-red-400">*</span>
+									</label>
+									<p className="text-gray-400 text-xs">Например: /, /about, /services</p>
+								</div>
+							</div>
+							<input
+								type="text"
+								value={page.slug}
+								onChange={(e) => setPage({ ...page, slug: e.target.value })}
+								className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+								placeholder="/about"
+							/>
+						</div>
 
-					{/* Опубликовано */}
-					<div className="flex items-center">
-						<input
-							type="checkbox"
-							id="published"
-							checked={page.published}
-							onChange={(e) => setPage({ ...page, published: e.target.checked })}
-							className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-						/>
-						<label htmlFor="published" className="ml-2 block text-sm text-gray-700">
-							Опубликовать страницу (если не отмечено - страница будет черновиком)
-						</label>
-					</div>
+						{/* Контент */}
+						<div>
+							<div className="flex items-center space-x-3 mb-4">
+								<div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+									<Type className="h-5 w-5 text-white" />
+								</div>
+								<div>
+									<label className="block text-sm font-semibold text-white">
+										Контент
+									</label>
+									<p className="text-gray-400 text-xs">Можно использовать HTML теги для форматирования</p>
+								</div>
+							</div>
+							<textarea
+								value={page.content}
+								onChange={(e) => setPage({ ...page, content: e.target.value })}
+								rows={12}
+								className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm transition-all duration-200 resize-none"
+								placeholder="Напишите текст страницы..."
+							/>
+						</div>
+
+						{/* Опубликовано */}
+						<div className="flex items-center space-x-4 p-4 bg-gray-800/30 rounded-xl">
+							<input
+								type="checkbox"
+								id="published"
+								checked={page.published}
+								onChange={(e) => setPage({ ...page, published: e.target.checked })}
+								className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-800"
+							/>
+							<label htmlFor="published" className="text-sm text-white">
+								Опубликовать страницу (если не отмечено - страница будет черновиком)
+							</label>
+						</div>
 				</div>
 
-				{/* Подсказка */}
-				<div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-					<h3 className="text-sm font-medium text-blue-800 mb-2">💡 Форматирование текста</h3>
-          <div className="text-sm text-blue-700 space-y-1">
-            <p className="font-mono">&lt;h2&gt;Заголовок&lt;/h2&gt;</p>
-            <p className="font-mono">&lt;p&gt;Параграф текста&lt;/p&gt;</p>
-            <p className="font-mono">&lt;strong&gt;Жирный&lt;/strong&gt;</p>
-            <p className="font-mono">&lt;em&gt;Курсив&lt;/em&gt;</p>
-            <p className="font-mono">&lt;a href=&quot;...&quot;&gt;Ссылка&lt;/a&gt;</p>
-          </div>
-				</div>
-			</main>
+					{/* Подсказка */}
+					<div className="mt-6 glass rounded-2xl p-6">
+						<div className="flex items-start space-x-4">
+							<div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
+								<span className="text-white text-lg">💡</span>
+							</div>
+							<div>
+								<h3 className="text-lg font-semibold text-white mb-3">Форматирование текста</h3>
+								<div className="text-sm text-gray-400 space-y-2 font-mono">
+									<p>&lt;h2&gt;Заголовок&lt;/h2&gt;</p>
+									<p>&lt;p&gt;Параграф текста&lt;/p&gt;</p>
+									<p>&lt;strong&gt;Жирный&lt;/strong&gt;</p>
+									<p>&lt;em&gt;Курсив&lt;/em&gt;</p>
+									<p>&lt;a href=&quot;...&quot;&gt;Ссылка&lt;/a&gt;</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</main>
+			</div>
 		</div>
 	);
 }

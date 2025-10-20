@@ -38,9 +38,9 @@ export default function FileList({ files, onDelete, onRefresh, loading = false }
 
   const getFileIcon = (key: string) => {
     if (key.includes('/images/')) {
-      return <Image className="h-5 w-5 text-blue-500" />;
+      return <Image className="h-6 w-6 text-blue-400" />;
     }
-    return <FileText className="h-5 w-5 text-gray-500" />;
+    return <FileText className="h-6 w-6 text-purple-400" />;
   };
 
   const getFileType = (key: string) => {
@@ -73,52 +73,69 @@ export default function FileList({ files, onDelete, onRefresh, loading = false }
 
   if (loading) {
     return (
-      <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-        <p className="mt-2 text-gray-600">Загрузка файлов...</p>
+      <div className="text-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-2 border-blue-500 border-t-transparent mx-auto"></div>
+        <p className="mt-4 text-gray-400 text-lg">Загрузка файлов...</p>
       </div>
     );
   }
 
   if (files.length === 0) {
     return (
-      <div className="text-center py-8">
-        <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <p className="text-gray-600">Файлы не найдены</p>
-        <p className="text-sm text-gray-500">Загрузите файлы, чтобы начать работу</p>
+      <div className="text-center py-12">
+        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center mx-auto mb-6">
+          <FileText className="h-10 w-10 text-gray-400" />
+        </div>
+        <h3 className="text-xl font-semibold text-white mb-2">Файлы не найдены</h3>
+        <p className="text-gray-400">Загрузите файлы, чтобы начать работу</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
-      {files.map((file) => (
-        <div key={file.Key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-          <div className="flex items-center space-x-3 flex-1 min-w-0">
-            {getFileIcon(file.Key)}
+    <div className="space-y-3">
+      {files.map((file, index) => (
+        <div 
+          key={file.Key} 
+          className="group flex items-center justify-between p-4 bg-gray-800/50 rounded-2xl hover:bg-gray-700/50 transition-all duration-300 animate-fade-in"
+          style={{ animationDelay: `${index * 0.1}s` }}
+        >
+          <div className="flex items-center space-x-4 flex-1 min-w-0">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+              {getFileIcon(file.Key)}
+            </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-900 truncate">
+              <p className="font-semibold text-white truncate text-lg">
                 {file.Key.split('/').pop()}
               </p>
-              <div className="flex items-center space-x-4 text-sm text-gray-500">
-                <span>{getFileType(file.Key)}</span>
-                <span>{formatFileSize(file.Size)}</span>
-                <span>{formatDate(file.LastModified)}</span>
+              <div className="flex items-center space-x-6 text-sm text-gray-400 mt-1">
+                <span className="flex items-center space-x-1">
+                  <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                  <span>{getFileType(file.Key)}</span>
+                </span>
+                <span className="flex items-center space-x-1">
+                  <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                  <span>{formatFileSize(file.Size)}</span>
+                </span>
+                <span className="flex items-center space-x-1">
+                  <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+                  <span>{formatDate(file.LastModified)}</span>
+                </span>
               </div>
             </div>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             <button
               onClick={() => handleDelete(file.Key)}
               disabled={deleting === file.Key}
-              className="text-red-600 hover:text-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 group-hover:scale-110"
               title="Удалить файл"
             >
               {deleting === file.Key ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-red-400 border-t-transparent"></div>
               ) : (
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-5 w-5" />
               )}
             </button>
           </div>

@@ -1,10 +1,11 @@
 'use client';
 
+import Sidebar from '@/components/Sidebar';
 import { UserButton, useUser } from '@clerk/nextjs';
-import { ArrowLeft, Plus, Edit2, Trash2, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Edit2, Eye, EyeOff, FileText, Globe, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface Page {
   id: string;
@@ -137,121 +138,176 @@ export default function ContentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Link 
-                href="/dashboard"
-                className="text-gray-600 hover:text-gray-900"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-              <h1 className="text-xl font-semibold text-gray-900">
-                Управление контентом
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={handleAddPage}
-                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Добавить страницу</span>
-              </button>
-              <UserButton afterSignOutUrl="/" />
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-gray-900">
+      <Sidebar />
+      
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-sm border">
-          <div className="px-6 py-4 border-b">
-            <h2 className="text-lg font-semibold text-gray-900">Страницы сайта</h2>
-          </div>
-
-          {pages.length === 0 ? (
-            <div className="p-8 text-center">
-              <p className="text-gray-600 mb-4">Пока нет ни одной страницы</p>
-              <button
-                onClick={handleAddPage}
-                className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Создать первую страницу</span>
-              </button>
+      <div className="lg:pl-64">
+        {/* Header */}
+        <header className="bg-gray-900/50 backdrop-blur-xl border-b border-gray-800 sticky top-0 z-30">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Link 
+                  href="/dashboard"
+                  className="p-2 rounded-xl bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white transition-colors"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Link>
+                <div>
+                  <h1 className="text-2xl font-bold text-white">
+                    Управление контентом
+                  </h1>
+                  <p className="text-gray-400 text-sm mt-1">Создавайте и редактируйте страницы сайта</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={handleAddPage}
+                  className="gradient-button flex items-center space-x-3 text-white font-semibold py-3 px-6 rounded-2xl"
+                >
+                  <Plus className="h-5 w-5" />
+                  <span>Добавить страницу</span>
+                </button>
+                <UserButton 
+                  afterSignOutUrl="/"
+                  appearance={{
+                    elements: {
+                      avatarBox: "w-10 h-10",
+                      userButtonPopoverCard: "bg-gray-800 border-gray-700",
+                      userButtonPopoverActionButton: "text-gray-300 hover:bg-gray-700",
+                    }
+                  }}
+                />
+              </div>
             </div>
-          ) : (
-            <div className="divide-y">
-              {pages.map((page) => (
-                <div key={page.id} className="p-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3">
-                        <h3 className="font-semibold text-gray-900">{page.title}</h3>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          page.published 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {page.published ? 'Опубликовано' : 'Черновик'}
-                        </span>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="p-6 max-w-4xl">
+          <div className="glass rounded-2xl overflow-hidden">
+            <div className="px-6 py-6 border-b border-gray-800">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                  <FileText className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white">Страницы сайта</h2>
+                  <p className="text-gray-400 text-sm">{pages.length} страниц</p>
+                </div>
+              </div>
+            </div>
+
+            {pages.length === 0 ? (
+              <div className="p-12 text-center">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center mx-auto mb-6">
+                  <FileText className="h-10 w-10 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Пока нет ни одной страницы</h3>
+                <p className="text-gray-400 mb-6">Создайте первую страницу для вашего сайта</p>
+                <button
+                  onClick={handleAddPage}
+                  className="gradient-button inline-flex items-center space-x-3 text-white font-semibold py-3 px-6 rounded-2xl"
+                >
+                  <Plus className="h-5 w-5" />
+                  <span>Создать первую страницу</span>
+                </button>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-800">
+                {pages.map((page, index) => (
+                  <div 
+                    key={page.id} 
+                    className="p-6 hover:bg-gray-800/50 transition-all duration-300 animate-fade-in"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-4 mb-3">
+                          <h3 className="font-semibold text-white text-lg">{page.title}</h3>
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                            page.published 
+                              ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                              : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                          }`}>
+                            {page.published ? 'Опубликовано' : 'Черновик'}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2 text-sm text-gray-400 mb-3">
+                          <Globe className="h-4 w-4" />
+                          <span>/{page.slug}</span>
+                        </div>
+                        <p className="text-sm text-gray-300 line-clamp-2">{page.content}</p>
                       </div>
-                      <p className="text-sm text-gray-500 mt-1">{page.slug}</p>
-                      <p className="text-sm text-gray-600 mt-2 line-clamp-2">{page.content}</p>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2 ml-4">
-                      <button
-                        onClick={() => togglePublished(page.id)}
-                        className="p-2 text-gray-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                        title={page.published ? 'Скрыть' : 'Опубликовать'}
-                      >
-                        {page.published ? (
-                          <EyeOff className="h-5 w-5" />
-                        ) : (
-                          <Eye className="h-5 w-5" />
-                        )}
-                      </button>
                       
-                      <button
-                        onClick={() => handleEditPage(page.id)}
-                        className="p-2 text-gray-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                        title="Редактировать"
-                      >
-                        <Edit2 className="h-5 w-5" />
-                      </button>
-                      
-                      <button
-                        onClick={() => handleDeletePage(page.id)}
-                        className="p-2 text-gray-600 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-                        title="Удалить"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
+                      <div className="flex items-center space-x-2 ml-6">
+                        <button
+                          onClick={() => togglePublished(page.id)}
+                          className="p-3 rounded-xl bg-gray-800/50 hover:bg-gray-700/50 text-gray-400 hover:text-blue-400 transition-all duration-200"
+                          title={page.published ? 'Скрыть' : 'Опубликовать'}
+                        >
+                          {page.published ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
+                        
+                        <button
+                          onClick={() => handleEditPage(page.id)}
+                          className="p-3 rounded-xl bg-gray-800/50 hover:bg-gray-700/50 text-gray-400 hover:text-green-400 transition-all duration-200"
+                          title="Редактировать"
+                        >
+                          <Edit2 className="h-5 w-5" />
+                        </button>
+                        
+                        <button
+                          onClick={() => handleDeletePage(page.id)}
+                          className="p-3 rounded-xl bg-gray-800/50 hover:bg-gray-700/50 text-gray-400 hover:text-red-400 transition-all duration-200"
+                          title="Удалить"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-        {/* Подсказка */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">💡 Подсказка</h3>
-          <ul className="text-sm text-blue-700 space-y-1">
-            <li>• Создавайте страницы для различных разделов вашего сайта</li>
-            <li>• Используйте slug для определения URL (например: /about, /services)</li>
-            <li>• Черновики не отображаются на публичном сайте</li>
-            <li>• После изменений нажмите &quot;Опубликовать сайт&quot; на главной странице</li>
-          </ul>
-        </div>
-      </main>
+          {/* Подсказка */}
+          <div className="mt-6 glass rounded-2xl p-6">
+            <div className="flex items-start space-x-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-lg">💡</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-3">Подсказка</h3>
+                <ul className="text-sm text-gray-400 space-y-2">
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                    <span>Создавайте страницы для различных разделов вашего сайта</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+                    <span>Используйте slug для определения URL (например: /about, /services)</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-orange-400"></div>
+                    <span>Черновики не отображаются на публичном сайте</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
+                    <span>После изменений нажмите &quot;Опубликовать сайт&quot; на главной странице</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
