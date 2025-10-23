@@ -160,7 +160,7 @@ export default function MediaPage() {
         <div className="text-red-500 text-center">
           <h2 className="text-xl font-bold mb-4">Ошибка загрузки</h2>
           <p>{error}</p>
-          <button onClick={loadFiles} className="gradient-button mt-4">
+          <button onClick={() => loadFiles()} className="gradient-button mt-4">
             Повторить
           </button>
         </div>
