@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth();
-    
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -15,12 +14,50 @@ export async function GET(request: NextRequest) {
 
     const files = await listClientFiles(userId, prefix);
     
-    return NextResponse.json({ files });
+    
+    // Показываем папки, но исключаем саму папку images/
+    const folders = files.filter(file => {
+      const key = file.Key || '';
+      if (!key.endsWith('/')) return false;
+      
+      // Исключаем саму папку images/ (пустую папку)
+      const withoutClientPrefix = key.replace(`clients/${userId}/`, '');
+      if (withoutClientPrefix === 'images/') return false;
+      
+      return true;
+    }).map(folder => ({
+      ...folder,
+      type: 'folder' as const
+    }));
+    
+    
+    const imageFiles = files.filter(file => {
+      const key = file.Key || '';
+      const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(key);
+      const isNotFolder = !key.endsWith('/');
+      return isImage && isNotFolder;
+    });
+    
+    // Добавляем URL для каждого файла
+    const publicUrl = `https://pub-a6698d33e75a45ebb75c9b00d0c3ce2a.r2.dev`;
+    const filesWithUrls = imageFiles.map(file => ({
+      ...file,
+      url: `${publicUrl}/${file.Key}`,
+      type: 'file'
+    }));
+    
+    const foldersWithUrls = folders.map(folder => ({
+      ...folder,
+      url: null, // Папки не имеют URL
+      type: 'folder'
+    }));
+    
+    // Объединяем папки и файлы
+    const allItems = [...foldersWithUrls, ...filesWithUrls];
+
+    return NextResponse.json({ files: allItems });
   } catch (error) {
     console.error('Error listing files:', error);
-    return NextResponse.json(
-      { error: 'Failed to list files' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to list files' }, { status: 500 });
   }
 }

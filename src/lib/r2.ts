@@ -18,10 +18,21 @@ export async function listClientFiles(userId: string, prefix: string = '') {
     const command = new ListObjectsV2Command({
       Bucket: BUCKET_NAME,
       Prefix: `clients/${userId}/${prefix}`,
+      Delimiter: '/', // Это ключевое изменение!
     });
 
     const response = await r2Client.send(command);
-    return response.Contents || [];
+    
+    // Объединяем папки и файлы
+    const folders = (response.CommonPrefixes || []).map(prefix => ({
+      Key: prefix.Prefix || '',
+      LastModified: new Date().toISOString(),
+      Size: 0,
+    }));
+    
+    const files = response.Contents || [];
+    
+    return [...folders, ...files];
   } catch (error) {
     console.error('Error listing files:', error);
     throw new Error('Failed to list files');
@@ -29,38 +40,24 @@ export async function listClientFiles(userId: string, prefix: string = '') {
 }
 
 // Функция для загрузки файла
-export async function uploadFile(userId: string, file: File, path: string) {
+export async function uploadFile(userId: string, fileName: string, buffer: Buffer, contentType: string) {
   try {
-    const buffer = Buffer.from(await file.arrayBuffer());
-    
     const command = new PutObjectCommand({
       Bucket: BUCKET_NAME,
-      Key: `clients/${userId}/${path}`,
+      Key: `clients/${userId}/${fileName}`,
       Body: buffer,
-      ContentType: file.type,
+      ContentType: contentType,
     });
 
     await r2Client.send(command);
-    return { success: true };
+    
+    // Возвращаем URL файла
+    const publicUrl = `https://pub-${process.env.R2_ACCOUNT_ID}.r2.dev`;
+    const url = `${publicUrl}/clients/${userId}/${fileName}`;
+    return url;
   } catch (error) {
     console.error('Error uploading file:', error);
     throw new Error('Failed to upload file');
-  }
-}
-
-// Функция для удаления файла
-export async function deleteFile(userId: string, key: string) {
-  try {
-    const command = new DeleteObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: `clients/${userId}/${key}`,
-    });
-
-    await r2Client.send(command);
-    return { success: true };
-  } catch (error) {
-    console.error('Error deleting file:', error);
-    throw new Error('Failed to delete file');
   }
 }
 
@@ -73,16 +70,20 @@ export async function getJsonFile(userId: string, filename: string) {
     });
 
     const response = await r2Client.send(command);
-    const content = await response.Body?.transformToString();
-    return content ? JSON.parse(content) : null;
+    const body = await response.Body?.transformToString();
+    
+    if (!body) {
+      throw new Error('File not found');
+    }
+
+    return JSON.parse(body);
   } catch (error) {
     console.error('Error getting JSON file:', error);
-    return null;
+    throw new Error('Failed to get JSON file');
   }
 }
 
 // Функция для сохранения JSON файла
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function saveJsonFile(userId: string, filename: string, data: any) {
   try {
     const command = new PutObjectCommand({
@@ -100,25 +101,18 @@ export async function saveJsonFile(userId: string, filename: string, data: any) 
   }
 }
 
-// Функция для автоматического создания стандартных папок
-export async function ensureDefaultFolders(userId: string) {
-  const DEFAULT_FOLDERS = ['logos', 'hero', 'about', 'services', 'gallery', 'general'];
-  
-  for (const folder of DEFAULT_FOLDERS) {
-    try {
-      const folderKey = `clients/${userId}/images/${folder}/`;
-      
-      const command = new PutObjectCommand({
-        Bucket: BUCKET_NAME,
-        Key: folderKey,
-        Body: '',
-        ContentType: 'application/x-directory',
-      });
+// Функция для удаления файла
+export async function deleteFile(userId: string, key: string) {
+  try {
+    const command = new DeleteObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key, // Используем ключ как есть, без добавления префикса
+    });
 
-      await r2Client.send(command);
-    } catch (error) {
-      // Папка уже существует, это нормально
-      console.log(`Folder ${folder} already exists or error creating it`);
-    }
+    await r2Client.send(command);
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting file:', error);
+    throw new Error('Failed to delete file');
   }
 }
