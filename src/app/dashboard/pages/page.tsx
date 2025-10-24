@@ -1,5 +1,6 @@
 'use client';
 
+import { parseJsonTemplate } from '@/lib/parser';
 import { useUser } from '@clerk/nextjs';
 import { ArrowLeft, Edit, Eye, FileText, Trash2 } from 'lucide-react';
 import Link from 'next/link';
@@ -25,19 +26,43 @@ export default function PagesPage() {
 
   const loadPages = async () => {
     try {
-      const response = await fetch('/api/files/get?file=pages.json');
-      if (response.ok) {
-        const data = await response.json();
-        // Убеждаемся, что pages всегда массив
-        const pagesData = Array.isArray(data.data) ? data.data : [];
-        setPages(pagesData);
+      // Загружаем шаблон pages.json
+      const templateResponse = await fetch('/api/files/get?file=pages.json');
+      if (templateResponse.ok) {
+        const templateData = await templateResponse.json();
+        
+        // Загружаем данные из content.json
+        const contentResponse = await fetch('/api/files/get?file=content.json');
+        if (contentResponse.ok) {
+          const contentData = await contentResponse.json();
+          
+          // Парсим каждую страницу из content.json
+          const pagesData = Object.values(contentData.pages || {}).map((page: any) => {
+            const data = {
+              PageId: page.id,
+              PageTitle: page.title,
+              PageSlug: page.slug,
+              PageStatus: 'published'
+            };
+            
+            // Парсим шаблон страницы
+            const parsedPage = parseJsonTemplate(JSON.stringify(templateData.pages[0]), data);
+            
+            return {
+              ...parsedPage,
+              sections: page.sections || []
+            };
+          });
+          
+          setPages(pagesData);
+        } else {
+          setPages([]);
+        }
       } else {
-        // Если файл не найден, инициализируем пустым массивом
         setPages([]);
       }
     } catch (error) {
       console.error('Error loading pages:', error);
-      // В случае ошибки тоже инициализируем пустым массивом
       setPages([]);
     } finally {
       setLoading(false);
@@ -140,9 +165,9 @@ export default function PagesPage() {
                         <Eye className="h-4 w-4 text-green-400" />
                       </button>
                       <Link
-                        href={`/dashboard/pages/${page.id}/sections`}
+                        href={`/dashboard/pages/${page.id}/edit`}
                         className="p-2 bg-blue-600/20 hover:bg-blue-600/30 rounded-lg transition-colors"
-                        title="Редактировать секции"
+                        title="Редактировать страницу"
                       >
                         <Edit className="h-4 w-4 text-blue-400" />
                       </Link>

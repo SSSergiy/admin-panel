@@ -22,18 +22,20 @@ export default function DashboardPage() {
   const loadStats = async () => {
     try {
       // Загружаем статистику
-      const [pagesRes, imagesRes] = await Promise.all([
-        fetch('/api/files/get?file=pages.json'),
+      const [contentRes, imagesRes] = await Promise.all([
+        fetch('/api/files/get?file=content.json'),
         fetch('/api/files/list?prefix=images/')
       ]);
 
-      const pagesData = pagesRes.ok ? await pagesRes.json() : { data: [] };
+      const contentData = contentRes.ok ? await contentRes.json() : { pages: {} };
       const imagesData = imagesRes.ok ? await imagesRes.json() : { files: [] };
 
+      const pagesCount = contentData.pages ? Object.keys(contentData.pages).length : 0;
+
       setStats({
-        pages: pagesData.data?.length || 0,
+        pages: pagesCount,
         images: imagesData.files?.length || 0,
-        files: (pagesData.data?.length || 0) + (imagesData.files?.length || 0)
+        files: pagesCount + (imagesData.files?.length || 0)
       });
     } catch (error) {
       console.error('Error loading stats:', error);

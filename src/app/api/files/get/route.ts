@@ -1,25 +1,20 @@
 import { getJsonFile } from '@/lib/r2';
-import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { searchParams } = new URL(request.url);
-    const filename = searchParams.get('file');
-
-    if (!filename) {
-      return NextResponse.json({ error: 'Filename is required' }, { status: 400 });
+    const fileName = searchParams.get('file');
+    
+    if (!fileName) {
+      return NextResponse.json({ error: 'File name is required' }, { status: 400 });
     }
 
-    const data = await getJsonFile(userId, filename);
-    return NextResponse.json({ data });
+    const jsonData = await getJsonFile('user_34EvUVHa2Fv9rbrXKRzHCbR7791', fileName);
+    
+    return NextResponse.json(jsonData);
   } catch (error) {
-    console.error('Error getting file:', error);
-    return NextResponse.json({ error: 'Failed to get file' }, { status: 500 });
+    console.error('Error loading file:', error);
+    return NextResponse.json({ error: 'Failed to load file' }, { status: 500 });
   }
 }
