@@ -162,13 +162,13 @@ export default function EditSectionPage() {
 
       // Получаем все страницы и обновляем нужную
       const response = await fetch('/api/files/get?file=content.json');
-      let contentData = { pages: {} };
+      let contentData: { pages: Record<string, any> } = { pages: {} };
       
       if (response.ok) {
         contentData = await response.json();
       }
       
-      (contentData.pages as any)[pageId] = updatedPage;
+      contentData.pages[pageId] = updatedPage;
 
       await fetch('/api/files/save', {
         method: 'POST',

@@ -134,7 +134,7 @@ export default function EditPagePage() {
     try {
       // Получаем все страницы и обновляем нужную
       const response = await fetch('/api/files/get?file=content.json');
-      let contentData = { pages: {} };
+      let contentData: { pages: Record<string, any> } = { pages: {} };
       
       if (response.ok) {
         contentData = await response.json();
