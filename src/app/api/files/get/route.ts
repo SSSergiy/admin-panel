@@ -1,8 +1,16 @@
 import { getJsonFile } from '@/lib/r2';
+import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
+    // 🔒 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Проверяем авторизацию
+    const { userId } = await auth();
+    if (!userId) {
+      console.log('❌ Unauthorized access attempt to /api/files/get');
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const fileName = searchParams.get('file');
     
@@ -10,7 +18,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'File name is required' }, { status: 400 });
     }
 
-    const jsonData = await getJsonFile('user_34EvUVHa2Fv9rbrXKRzHCbR7791', fileName);
+    // 🔒 БЕЗОПАСНО: Используем userId из сессии, а не хардкод
+    console.log(`🔍 User ${userId} requesting file: ${fileName}`);
+    const jsonData = await getJsonFile(userId, fileName);
     
     return NextResponse.json(jsonData);
   } catch (error) {
