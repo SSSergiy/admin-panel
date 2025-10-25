@@ -39,7 +39,9 @@ export async function GET(request: NextRequest) {
     });
     
     // Добавляем URL для каждого файла
-    const publicUrl = `https://pub-a6698d33e75a45ebb75c9b00d0c3ce2a.r2.dev`;
+    const publicUrl = `https://pub-${process.env.R2_ACCOUNT_ID}.r2.dev`;
+    console.log(`🔗 Using R2 public URL: ${publicUrl}`);
+    
     const filesWithUrls = imageFiles.map(file => ({
       ...file,
       url: `${publicUrl}/${file.Key}`,

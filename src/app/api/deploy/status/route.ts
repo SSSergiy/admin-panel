@@ -1,9 +1,33 @@
+import { getJsonFile } from '@/lib/r2';
+import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
+    // 🔒 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Проверяем авторизацию
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    // 🔧 ИСПРАВЛЕНИЕ: Получаем конфигурацию GitHub из content.json
+    let githubConfig;
+    try {
+      const contentData = await getJsonFile(userId, 'content.json');
+      githubConfig = contentData?.github;
+    } catch (error) {
+    }
+
+    // Проверяем, есть ли конфигурация GitHub
+    if (!githubConfig || !githubConfig.owner || !githubConfig.repo) {
+      return NextResponse.json({ 
+        status: 'error', 
+        message: 'GitHub repository not configured. Please set up GitHub integration in your content settings.' 
+      });
+    }
+    
     // Получаем последний статус деплоя из GitHub Actions
-    const response = await fetch('https://api.github.com/repos/SSSergiy/website-code/actions/runs?per_page=1', {
+    const response = await fetch(`https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/actions/runs?per_page=1`, {
       headers: {
         'Authorization': `token ${process.env.GITHUB_TOKEN}`,
         'Accept': 'application/vnd.github.v3+json'
@@ -47,7 +71,6 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error fetching deploy status:', error);
     return NextResponse.json({ 
       status: 'error', 
       message: 'Failed to fetch deploy status' 

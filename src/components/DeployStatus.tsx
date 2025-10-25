@@ -13,7 +13,22 @@ interface DeployStatus {
 
 export default function DeployStatus() {
   const [deployStatus, setDeployStatus] = useState<DeployStatus | null>(null);
+  const [siteUrl, setSiteUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);
+
+  const fetchSiteUrl = async () => {
+    try {
+      const response = await fetch('/api/files/get?file=content.json');
+      if (response.ok) {
+        const contentData = await response.json();
+        if (contentData?.site?.url) {
+          setSiteUrl(contentData.site.url);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching site URL:', error);
+    }
+  };
 
   const fetchStatus = async () => {
     try {
@@ -29,6 +44,7 @@ export default function DeployStatus() {
 
   useEffect(() => {
     fetchStatus();
+    fetchSiteUrl();
     
     // Обновляем статус каждые 5 секунд если деплой в процессе
     const interval = setInterval(() => {
@@ -105,9 +121,9 @@ export default function DeployStatus() {
         </div>
         
          <div className="flex space-x-2">
-           {deployStatus.status === 'success' && (
+           {deployStatus.status === 'success' && siteUrl && (
              <a
-               href="https://website-code-eg1.pages.dev"
+               href={siteUrl}
                target="_blank"
                rel="noopener noreferrer"
                className="text-sm underline hover:no-underline"

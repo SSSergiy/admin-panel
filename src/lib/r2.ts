@@ -47,13 +47,16 @@ export async function uploadFile(userId: string, fileName: string, buffer: Buffe
       Key: `clients/${userId}/${fileName}`,
       Body: buffer,
       ContentType: contentType,
+      // 🔓 Изображения остаются публичными (нужны для сайта)
+      ACL: 'public-read'
     });
 
     await r2Client.send(command);
     
-    // Возвращаем URL файла
-    const publicUrl = `https://pub-${process.env.R2_ACCOUNT_ID}.r2.dev`;
-    const url = `${publicUrl}/clients/${userId}/${fileName}`;
+    // 🔒 БЕЗОПАСНО: Возвращаем URL через API, а не прямую R2 ссылку
+    const apiUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const url = `${apiUrl}/api/images/clients/${userId}/${fileName}`;
+    console.log(`🔒 Image file saved with API proxy: ${fileName}`);
     return url;
   } catch (error) {
     console.error('Error uploading file:', error);
@@ -83,6 +86,7 @@ export async function getJsonFile(userId: string, filename: string) {
   }
 }
 
+
 // Функция для сохранения JSON файла
 export async function saveJsonFile(userId: string, filename: string, data: any) {
   try {
@@ -91,9 +95,13 @@ export async function saveJsonFile(userId: string, filename: string, data: any) 
       Key: `clients/${userId}/data/${filename}`,
       Body: JSON.stringify(data, null, 2),
       ContentType: 'application/json',
+      // 🔒 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Делаем JSON файлы приватными
+      ACL: 'private',
+      ServerSideEncryption: 'AES256'
     });
 
     await r2Client.send(command);
+    console.log(`🔒 JSON file saved as PRIVATE: ${filename}`);
     return { success: true };
   } catch (error) {
     console.error('Error saving JSON file:', error);
