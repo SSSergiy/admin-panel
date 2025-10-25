@@ -1,5 +1,6 @@
 'use client';
 
+import DeployStatus from '@/components/DeployStatus';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { FileText, Image } from 'lucide-react';
 import Link from 'next/link';
@@ -88,6 +89,9 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="p-6">
         <div className="max-w-6xl mx-auto">
+          {/* Deploy Status */}
+          <DeployStatus />
+          
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="card">
