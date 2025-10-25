@@ -39,7 +39,7 @@ export async function GET(
     }
 
     // Возвращаем изображение с правильными заголовками
-    return new NextResponse(body.buffer, {
+    return new NextResponse(new Uint8Array(body), {
       headers: {
         'Content-Type': response.ContentType || 'image/jpeg',
         'Cache-Control': 'public, max-age=31536000', // 1 год кеша
