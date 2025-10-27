@@ -1,5 +1,7 @@
 'use client';
 
+import ImageUploadField from '@/components/ImageUploadField';
+import { useUser } from '@clerk/nextjs';
 import { useState } from 'react';
 
 interface FieldConfig {
@@ -24,6 +26,7 @@ export default function DynamicFormRenderer({
   initialValues = {}, 
   onSubmit 
 }: DynamicFormRendererProps) {
+  const { user } = useUser();
   const [values, setValues] = useState(initialValues);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -76,6 +79,32 @@ export default function DynamicFormRenderer({
               <option key={option} value={option}>{option}</option>
             ))}
           </select>
+        );
+
+      case 'image':
+        return (
+          <ImageUploadField
+            key={name}
+            value={value}
+            onChange={(url: string) => setValues(prev => ({ ...prev, [name]: url }))}
+            onUpload={async (file: File) => {
+              if (!user) throw new Error('User not logged in');
+              
+              const formData = new FormData();
+              formData.append('file', file);
+              formData.append('prefix', 'images/');
+
+              const response = await fetch('/api/files/upload', {
+                method: 'POST',
+                body: formData,
+              });
+
+              if (!response.ok) throw new Error('Upload failed');
+              
+              const data = await response.json();
+              return data.url;
+            }}
+          />
         );
       
       default:

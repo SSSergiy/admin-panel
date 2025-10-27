@@ -180,21 +180,6 @@ export default function PagesPage() {
                       </button>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex space-x-2">
-                      <Link
-                        href={`/dashboard/pages/${page.id}/edit`}
-                        className="button-secondary text-sm"
-                      >
-                        Настройки
-                      </Link>
-                      <button className="button-secondary text-sm">
-                        <Eye className="h-4 w-4 mr-1" />
-                        Просмотр
-                      </button>
-                    </div>
-                  </div>
                 </div>
               ))}
             </div>

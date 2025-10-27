@@ -93,7 +93,9 @@ export default function DashboardPage() {
           <DeployStatus />
           
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-white mb-4">Статистика</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="card">
               <div className="flex items-center justify-between">
                 <div>
@@ -123,10 +125,13 @@ export default function DashboardPage() {
                 <FileText className="h-8 w-8 text-purple-400" />
               </div>
             </div>
+            </div>
           </div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-white mb-4">Быстрые действия</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Link href="/dashboard/pages" className="card hover:bg-white/15 transition-colors group">
               <div className="flex items-center space-x-4">
                 <div className="p-3 bg-blue-600/20 rounded-xl group-hover:bg-blue-600/30 transition-colors">
@@ -152,12 +157,13 @@ export default function DashboardPage() {
               </div>
             </Link>
 
+            </div>
           </div>
 
           {/* Recent Activity */}
-          <div className="mt-8">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-white mb-4">История действий</h2>
             <div className="card">
-              <h2 className="text-xl font-bold text-white mb-4">Последние изменения</h2>
               <div className="space-y-3">
                 <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-xl">
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>

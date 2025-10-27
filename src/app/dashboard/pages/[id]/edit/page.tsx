@@ -1,6 +1,5 @@
 'use client';
 
-import { parseJsonTemplate } from '@/lib/parser';
 import { useUser } from '@clerk/nextjs';
 import { ArrowLeft, Edit, Eye, Save } from 'lucide-react';
 import Link from 'next/link';
@@ -52,66 +51,21 @@ export default function EditPagePage() {
 
   const loadData = async () => {
     try {
-      // Сначала пробуем загрузить page.{{PageId}}.json
-      const pageTemplateResponse = await fetch(`/api/files/get?file=page.{{PageId}}.json`);
-      
-      if (pageTemplateResponse.ok) {
-        const pageTemplate = await pageTemplateResponse.json();
-        
-        // Парсим шаблон с данными из content.json
-        const contentResponse = await fetch('/api/files/get?file=content.json');
-        if (contentResponse.ok) {
-          const contentData = await contentResponse.json();
-          const pages = contentData.pages || {};
-          const currentPage = pages[pageId];
-          
-          if (currentPage) {
-            // Парсим шаблон с данными страницы
-            const data = {
-              PageId: currentPage.id,
-              PageTitle: currentPage.title,
-              SectionId: currentPage.sections?.[0]?.id || 'section1',
-              SectionType: currentPage.sections?.[0]?.type || 'text',
-              FieldName: Object.keys(currentPage.sections?.[0]?.values || {})[0] || 'content',
-              FieldValue: Object.values(currentPage.sections?.[0]?.values || {})[0] || ''
-            };
-            
-            // Парсим шаблон с данными страницы
-            try {
-              const parsedPage = parseJsonTemplate(JSON.stringify(pageTemplate), data);
-              
-              // Объединяем парсированные данные с реальными данными из content.json
-              const finalPage = {
-                ...parsedPage,
-                slug: currentPage.slug, // Добавляем slug из content.json
-                sections: currentPage.sections || []
-              };
-              
-              setPage(finalPage);
-            } catch (parseError) {
-              console.error('Ошибка парсинга шаблона:', parseError);
-              // Fallback к данным из content.json
-              setPage(currentPage);
-            }
-          } else {
-            router.push('/dashboard/pages');
-            return;
-          }
+      // Загружаем данные из content.json
+      const contentResponse = await fetch('/api/files/get?file=content.json');
+      if (contentResponse.ok) {
+        const contentData = await contentResponse.json();
+        const pages = contentData.pages || {};
+        const currentPage = pages[pageId];
+        if (currentPage) {
+          setPage(currentPage);
+        } else {
+          router.push('/dashboard/pages');
+          return;
         }
       } else {
-        // Fallback к content.json
-        const contentResponse = await fetch('/api/files/get?file=content.json');
-        if (contentResponse.ok) {
-          const contentData = await contentResponse.json();
-          const pages = contentData.pages || {};
-          const currentPage = pages[pageId];
-          if (currentPage) {
-            setPage(currentPage);
-          } else {
-            router.push('/dashboard/pages');
-            return;
-          }
-        }
+        console.error('Failed to load content.json');
+        setLoading(false);
       }
 
       // Загружаем конфигурацию типов
@@ -281,16 +235,7 @@ export default function EditPagePage() {
 
           {/* Секции страницы */}
           <div className="card">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-white">Секции страницы</h2>
-              <Link
-                href={`/dashboard/pages/${pageId}/sections`}
-                className="button button-secondary"
-              >
-                <Edit className="h-4 w-4 mr-2" />
-                Управление секциями
-              </Link>
-            </div>
+            <h2 className="text-lg font-semibold text-white mb-4">Секции страницы</h2>
 
             {page.sections.length === 0 ? (
               <div className="text-center py-8">

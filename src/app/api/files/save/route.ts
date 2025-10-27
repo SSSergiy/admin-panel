@@ -1,5 +1,7 @@
 import { triggerGitHubBuild } from '@/lib/github';
 import { saveJsonFile } from '@/lib/r2';
+import { checkApiRateLimit } from '@/lib/rate-limit';
+import { validateFileName, validateJsonContent } from '@/lib/validation';
 import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -13,12 +15,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // 🚦 Rate limiting
+    if (!checkApiRateLimit(userId, '/api/files/save')) {
+      return NextResponse.json(
+        { error: 'Too many requests' },
+        { status: 429 }
+      );
+    }
+
     const { fileName, content } = await request.json();
     console.log('📄 Saving file:', fileName);
     
     if (!fileName || !content) {
       console.log('❌ Missing fileName or content');
       return NextResponse.json({ error: 'File name and content are required' }, { status: 400 });
+    }
+
+    // 🔒 Валидация имени файла
+    if (!validateFileName(fileName)) {
+      console.log('❌ Invalid file name:', fileName);
+      return NextResponse.json({ error: 'Invalid file name' }, { status: 400 });
+    }
+
+    // 🔒 Валидация содержимого
+    if (!validateJsonContent(content)) {
+      console.log('❌ Invalid JSON content');
+      return NextResponse.json({ error: 'Invalid JSON content' }, { status: 400 });
     }
 
     // Сохраняем файл в R2

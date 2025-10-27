@@ -112,6 +112,13 @@ export async function saveJsonFile(userId: string, filename: string, data: any) 
 // Функция для удаления файла
 export async function deleteFile(userId: string, key: string) {
   try {
+    // 🔒 КРИТИЧЕСКОЕ: Проверяем что файл принадлежит пользователю
+    const expectedPrefix = `clients/${userId}/`;
+    if (!key.startsWith(expectedPrefix)) {
+      console.error(`❌ SECURITY: User ${userId} tried to delete file ${key}`);
+      throw new Error('Access denied');
+    }
+
     const command = new DeleteObjectCommand({
       Bucket: BUCKET_NAME,
       Key: key, // Используем ключ как есть, без добавления префикса

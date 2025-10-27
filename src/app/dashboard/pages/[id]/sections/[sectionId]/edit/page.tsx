@@ -245,6 +245,11 @@ export default function EditSectionPage() {
         description: `Поле ${title}`
       };
       
+      // Устанавливаем виджет для полей типа image
+      if (fieldType === 'image') {
+        properties[key]['x-widget'] = 'image';
+      }
+      
       // Делаем обязательными основные поля
       if (key.toLowerCase().includes('title') || key.toLowerCase().includes('name')) {
         required.push(key);

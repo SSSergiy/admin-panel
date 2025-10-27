@@ -1,4 +1,6 @@
 import { listClientFiles } from '@/lib/r2';
+import { checkApiRateLimit } from '@/lib/rate-limit';
+import { validatePrefix } from '@/lib/validation';
 import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -9,8 +11,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // 🚦 Rate limiting
+    if (!checkApiRateLimit(userId, '/api/files/list')) {
+      return NextResponse.json(
+        { error: 'Too many requests' },
+        { status: 429 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const prefix = searchParams.get('prefix') || '';
+
+    // 🔒 Валидация prefix
+    if (prefix && !validatePrefix(prefix)) {
+      return NextResponse.json({ error: 'Invalid prefix' }, { status: 400 });
+    }
 
     const files = await listClientFiles(userId, prefix);
     
@@ -39,12 +54,13 @@ export async function GET(request: NextRequest) {
     });
     
     // Добавляем URL для каждого файла
-    const publicUrl = `https://pub-${process.env.R2_ACCOUNT_ID}.r2.dev`;
-    console.log(`🔗 Using R2 public URL: ${publicUrl}`);
+    // Используем API прокси вместо прямого R2 URL
+    const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    console.log(`🔗 Using API proxy URL: ${apiBaseUrl}`);
     
     const filesWithUrls = imageFiles.map(file => ({
       ...file,
-      url: `${publicUrl}/${file.Key}`,
+      url: `${apiBaseUrl}/api/images/${file.Key}`,
       type: 'file'
     }));
     
