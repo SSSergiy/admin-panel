@@ -1,10 +1,10 @@
 'use client';
 
-import { DeployStatus } from '@/types/site';
+import { DeployStatus as DeployStatusType } from '@/types/site';
 import { useEffect, useState } from 'react';
 
 export default function DeployStatus() {
-  const [deployStatus, setDeployStatus] = useState<DeployStatus | null>(null);
+  const [deployStatus, setDeployStatus] = useState<DeployStatusType | null>(null);
   const [siteUrl, setSiteUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
