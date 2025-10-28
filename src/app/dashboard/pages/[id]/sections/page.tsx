@@ -374,7 +374,7 @@ export default function PageSectionsPage() {
                               {sectionType?.label || section.type}
                             </h3>
                             <p className="text-sm text-gray-400">
-                              {section.heading || 'Без заголовка'}
+                              {section.values?.heading || 'Без заголовка'}
                             </p>
                             {!sectionType && (
                               <p className="text-xs text-yellow-400">
