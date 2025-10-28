@@ -127,9 +127,7 @@ export default function PageSectionsPage() {
       id: `section_${Date.now()}`,
       type,
       enabled: true,
-      heading: '',
-      subheading: '',
-      content: '',
+      values: {},
     };
 
     const updatedPage = {
