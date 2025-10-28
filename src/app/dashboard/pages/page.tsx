@@ -1,17 +1,11 @@
 'use client';
 
 import { parseJsonTemplate } from '@/lib/parser';
+import { Page } from '@/types/site';
 import { useUser } from '@clerk/nextjs';
 import { ArrowLeft, Edit, Eye, FileText, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-
-interface Page {
-  id: string;
-  title: string;
-  slug: string;
-  sections: any[];
-}
 
 export default function PagesPage() {
   const { user, isLoaded } = useUser();

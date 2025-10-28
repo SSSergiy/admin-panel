@@ -1,36 +1,11 @@
 'use client';
 
+import { AdminConfig, Page, Section } from '@/types/site';
 import { useUser } from '@clerk/nextjs';
 import { ArrowLeft, Edit, Eye, Save } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
-interface Section {
-  id: string;
-  type: string;
-  values: Record<string, any>;
-}
-
-interface Page {
-  id: string;
-  title: string;
-  slug: string;
-  sections: Section[];
-}
-
-interface AdminConfig {
-  sectionTypes: {
-    [key: string]: {
-      name: string;
-      description: string;
-      schema: {
-        type: string;
-        properties: Record<string, any>;
-      };
-    };
-  };
-}
 
 export default function EditPagePage() {
   const { user, isLoaded } = useUser();

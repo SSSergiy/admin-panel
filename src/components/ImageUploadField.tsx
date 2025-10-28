@@ -1,13 +1,8 @@
 'use client';
 
+import { ImageUploadFieldProps } from '@/types/site';
 import { Upload, X } from 'lucide-react';
 import { useState } from 'react';
-
-interface ImageUploadFieldProps {
-  value: string;
-  onChange: (url: string) => void;
-  onUpload: (file: File) => Promise<string>;
-}
 
 export default function ImageUploadField({ value, onChange, onUpload }: ImageUploadFieldProps) {
   const [uploading, setUploading] = useState(false);

@@ -1,19 +1,9 @@
 'use client';
 
 import ImageUploadField from '@/components/ImageUploadField';
+import { FieldConfig } from '@/types/site';
 import { useUser } from '@clerk/nextjs';
 import { useState } from 'react';
-
-interface FieldConfig {
-  name: string;
-  type: string;
-  title: string;
-  description?: string;
-  required?: boolean;
-  default?: any;
-  options?: string[];
-  validation?: any;
-}
 
 interface DynamicFormRendererProps {
   fields: FieldConfig[];

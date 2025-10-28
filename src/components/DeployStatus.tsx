@@ -1,15 +1,7 @@
 'use client';
 
+import { DeployStatus } from '@/types/site';
 import { useEffect, useState } from 'react';
-
-interface DeployStatus {
-  status: 'success' | 'building' | 'queued' | 'error' | 'unknown';
-  runId: number;
-  createdAt: string;
-  updatedAt: string;
-  conclusion: string | null;
-  message: string;
-}
 
 export default function DeployStatus() {
   const [deployStatus, setDeployStatus] = useState<DeployStatus | null>(null);

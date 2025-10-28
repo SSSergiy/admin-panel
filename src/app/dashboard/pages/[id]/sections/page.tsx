@@ -1,24 +1,11 @@
 'use client';
 
+import { Page, Section } from '@/types/site';
 import { useUser } from '@clerk/nextjs';
 import { ArrowLeft, Edit, Eye, GripVertical, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
-interface Section {
-  id: string;
-  type: string;
-  enabled: boolean;
-  [key: string]: any;
-}
-
-interface Page {
-  id: string;
-  title: string;
-  slug: string;
-  sections: Section[];
-}
 
 // Динамические типы секций будут загружаться из admin.config.json
 
