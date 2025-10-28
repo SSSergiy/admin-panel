@@ -161,27 +161,6 @@ export default function DashboardPage() {
           </div>
 
           {/* Recent Activity */}
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-white mb-4">История действий</h2>
-            <div className="card">
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-xl">
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  <div className="flex-1">
-                    <p className="text-white">Сайт обновлен</p>
-                    <p className="text-sm text-gray-400">2 минуты назад</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-xl">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                  <div className="flex-1">
-                    <p className="text-white">Загружено 5 изображений</p>
-                    <p className="text-sm text-gray-400">3 часа назад</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </main>
     </div>
