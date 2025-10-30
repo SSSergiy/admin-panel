@@ -58,8 +58,28 @@ export async function POST(request: NextRequest) {
       } else {
         console.log('❌ Failed to trigger GitHub Actions');
       }
+      
+      // 📡 Отправляем событие в n8n (не ждём ответ, чтобы не тормозить UI)
+      const webhookUrl = process.env.N8N_WEBHOOK_URL;
+      if (webhookUrl) {
+        console.log('📡 Sending webhook to n8n:', webhookUrl);
+        fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: 'content_saved',
+            userId,
+            fileName,
+            timestamp: new Date().toISOString()
+          })
+        }).then(() => {
+          console.log('✅ n8n webhook sent successfully');
+        }).catch((err) => {
+          console.error('❌ n8n webhook error:', err);
+        });
+      }
     } else {
-      console.log('ℹ️ File is not content.json, skipping GitHub trigger');
+      console.log('ℹ️ File is not content.json, skipping triggers');
     }
     
     return NextResponse.json({ 

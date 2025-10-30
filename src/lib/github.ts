@@ -21,7 +21,7 @@ export async function triggerGitHubBuild(userId: string) {
       return false;
     }
     
-    const { owner, repo, branch = 'dev' } = githubConfig;
+    const { owner, repo, branch = 'main' } = githubConfig;
     console.log(`🔧 Triggering GitHub Actions for ${owner}/${repo} (${branch})`);
     
     // Триггерим GitHub Actions
