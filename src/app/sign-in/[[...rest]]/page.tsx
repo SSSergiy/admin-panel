@@ -1,8 +1,21 @@
 'use client';
 
 import { SignIn } from '@clerk/nextjs';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function SignInPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Если ссылка инвайта пришла на /sign-in, перенаправим на /sign-up с токеном
+  useEffect(() => {
+    const token = searchParams.get('__clerk_invitation_token');
+    if (token) {
+      router.replace(`/sign-up?__clerk_invitation_token=${encodeURIComponent(token)}`);
+    }
+  }, [router, searchParams]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="w-full max-w-md">
