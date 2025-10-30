@@ -10,9 +10,12 @@ export default function SignInPage() {
 
   // Если ссылка инвайта пришла на /sign-in, перенаправим на /sign-up с токеном
   useEffect(() => {
-    const token = searchParams.get('__clerk_invitation_token');
-    if (token) {
-      router.replace(`/sign-up?__clerk_invitation_token=${encodeURIComponent(token)}`);
+    const invite = searchParams.get('__clerk_invitation_token');
+    const ticket = searchParams.get('__clerk_ticket');
+    if (invite) {
+      router.replace(`/sign-up?__clerk_invitation_token=${encodeURIComponent(invite)}`);
+    } else if (ticket) {
+      router.replace(`/sign-up?__clerk_ticket=${encodeURIComponent(ticket)}`);
     }
   }, [router, searchParams]);
 

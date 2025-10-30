@@ -9,8 +9,11 @@ export default function SignUpPage() {
   const searchParams = useSearchParams();
 
   const hasInvitationToken = useMemo(() => {
-    // Clerk передаёт токен приглашения как __clerk_invitation_token
-    return Boolean(searchParams.get('__clerk_invitation_token'));
+    // Поддерживаем оба варианта: старый (__clerk_invitation_token) и новый (__clerk_ticket)
+    return Boolean(
+      searchParams.get('__clerk_invitation_token') ||
+      searchParams.get('__clerk_ticket')
+    );
   }, [searchParams]);
 
   useEffect(() => {
